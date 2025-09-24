@@ -15,8 +15,8 @@ class PomodoroTimer:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Flow Bit - Pomodoro Timer")
-        self.root.geometry("800x800")
-        self.root.resizable(True, True)
+        self.root.geometry("600x700")
+        self.root.resizable(False, False)
         self.root.configure(bg="#f0f0f0")
         
         # Timer state variables
@@ -44,7 +44,7 @@ class PomodoroTimer:
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (600 // 2)
         y = (self.root.winfo_screenheight() // 2) - (700 // 2)
-        self.root.geometry(f"800x800+{x}+{y}")
+        self.root.geometry(f"600x700+{x}+{y}")
     
     def setup_ui(self):
         """Setup the Pomodoro timer UI"""
@@ -495,12 +495,12 @@ class PomodoroTimer:
 
 
 # --- Welcome Screen Class ---
-class  WelcomeScreen:
+class WelcomeScreen:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Welcome to Flow Bit")
-        self.root.geometry("800x800")
-        self.root.resizable(True, True)
+        self.root.geometry("650x600")
+        self.root.resizable(False, False)
         self.root.configure(bg="#f0f0f0")
         
         # Center the window
@@ -513,7 +513,7 @@ class  WelcomeScreen:
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (650 // 2)
         y = (self.root.winfo_screenheight() // 2) - (600 // 2)
-        self.root.geometry(f"800x800+{x}+{y}")
+        self.root.geometry(f"650x600+{x}+{y}")
     
     def setup_ui(self):
         """Setup the welcome screen UI"""
@@ -712,7 +712,7 @@ class SystemMonitorScreen:
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (800 // 2)
         y = (self.root.winfo_screenheight() // 2) - (600 // 2)
-        self.root.geometry(f"800x800+{x}+{y}")
+        self.root.geometry(f"800x600+{x}+{y}")
     
     def setup_ui(self):
         """Setup the system monitor UI"""
@@ -862,7 +862,9 @@ class SystemMonitorScreen:
         
         button.bind("<Enter>", on_enter)
         button.bind("<Leave>", on_leave)
-    
+
+        
+#    system management info code 
     def get_system_info(self):
         """Get system information using psutil or fallback methods"""
         try:
@@ -1003,6 +1005,7 @@ class SystemMonitorScreen:
         """Display the system monitor screen"""
         self.root.mainloop()
 
+
 # --- File type categories for sorting ---
 FILE_TYPES = {
     "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"],
@@ -1014,9 +1017,7 @@ FILE_TYPES = {
     "Archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
     "Videos": [".mp4", ".avi", ".mkv", ".mov"],
     "Music": [".mp3", ".wav", ".flac"],
-    "Code": [".py", ".cpp", ".c", ".java", ".js", ".html", ".css"],
-    "Executables": [".exe", ".bat", ".sh"],
-    "Others": []  # Catch-all for uncategorized files
+    "Code": [".py", ".cpp", ".c", ".java", ".js", ".html", ".css"]
 }
 
 
@@ -1053,53 +1054,8 @@ def sort_files(src_folders, dest_folder, log_widget, selected_types, sort_by_dat
                     target_dir = dest_folder / category / date_folder
                 else:
                     target_dir = dest_folder / category
-                
-                # Create target directory with better error handling
-                try:
-                    # First, ensure the destination folder exists
-                    if not dest_folder.exists():
-                        dest_folder.mkdir(parents=True, exist_ok=True)
-                    
-                    # Then create the category directory
-                    category_dir = dest_folder / category
-                    if not category_dir.exists():
-                        category_dir.mkdir(parents=True, exist_ok=True)
-                    
-                    # Finally create the full target directory
-                    target_dir.mkdir(parents=True, exist_ok=True)
-                    
-                except (OSError, PermissionError) as e:
-                    # Try to create a safe alternative directory name
-                    safe_category = "".join(c for c in category if c.isalnum() or c in (' ', '-', '_')).rstrip()
-                    if not safe_category:
-                        safe_category = "Other_Files"
-                    
-                    try:
-                        if sort_by_date:
-                            alt_target_dir = dest_folder / safe_category / date_folder
-                        else:
-                            alt_target_dir = dest_folder / safe_category
-                        alt_target_dir.mkdir(parents=True, exist_ok=True)
-                        target_dir = alt_target_dir
-                        log_widget.insert(tk.END, f"Created alternative directory: {target_dir}\n")
-                    except (OSError, PermissionError) as e2:
-                        log_widget.insert(tk.END, f"Error creating directory {target_dir}: {e}\n")
-                        log_widget.insert(tk.END, f"Alternative directory also failed: {e2}\n")
-                        log_widget.insert(tk.END, f"Skipping file: {file.name}\n")
-                        log_widget.see(tk.END)
-                        continue
-                
+                target_dir.mkdir(parents=True, exist_ok=True)
                 target_file = target_dir / file.name
-                
-                # Handle file name conflicts
-                counter = 1
-                original_target = target_file
-                while target_file.exists():
-                    stem = original_target.stem
-                    suffix = original_target.suffix
-                    target_file = target_dir / f"{stem}_{counter}{suffix}"
-                    counter += 1
-                
                 try:
                     shutil.move(str(file), str(target_file))
                     log_widget.insert(tk.END, f"Moved: {file.name} -> {target_file}\n")
@@ -1107,7 +1063,6 @@ def sort_files(src_folders, dest_folder, log_widget, selected_types, sort_by_dat
                     moved_count += 1
                 except Exception as e:
                     log_widget.insert(tk.END, f"Error moving {file.name}: {e}\n")
-                    log_widget.see(tk.END)
         total_moved += moved_count
         # Optionally delete empty folders after moving
         if delete_empty:
@@ -1136,418 +1091,95 @@ def choose_folders(entry_widget):
         entry_widget.delete(0, tk.END)
         entry_widget.insert(0, ';'.join(folder_list))
 
-# --- Main Application Function ---
-def start_main_app():
-    """Start the main file sorting application"""
-    # --- GUI Setup ---
-    root = tk.Tk()
-    root.title("Flow Bit - File Manager")
-    root.geometry("800x800")
-    root.resizable(True, True)
-    root.configure(bg="#f0f0f0")
-    
-    # Center the window
-    def center_window():
-        root.update_idletasks()
-        x = (root.winfo_screenwidth() // 2) - (800 // 2)
-        y = (root.winfo_screenheight() // 2) - (750 // 2)
-        root.geometry(f"800x800+{x}+{y}")
-    
-    center_window()
-    
-    # Main container
-    main_frame = tk.Frame(root, bg="#f0f0f0")
-    main_frame.pack(expand=True, fill="both", padx=12, pady=12)
-    
-    # Title
-    title_font = font.Font(family="Arial", size=15, weight="bold")
-    title_label = tk.Label(
-        main_frame, 
-        text="File Manager", 
-        font=title_font, 
-        fg="#2c3e50", 
-        bg="#f0f0f0"
-    )
-    title_label.pack(pady=(0, 20))
 
-    # --- Source Folders Section ---
-    source_frame = tk.LabelFrame(
-        main_frame, 
-        text="Source Folders", 
-        font=font.Font(family="Arial", size=12, weight="bold"), 
-        bg="#f0f0f0", 
-        fg="#2c3e50", 
-        padx=12, 
-        pady=12
-    )
-    source_frame.pack(fill="x", pady=(0, 12))
-    
-    tk.Label(
-        source_frame, 
-        text="Select source folders (multiple folders separated by semicolon):", 
-        font=font.Font(family="Arial", size=10), 
-        fg="#2c3e50", 
-        bg="#f0f0f0"
-    ).pack(anchor="w", pady=(0, 3))
-    
-    src_entry = tk.Entry(
-        source_frame, 
-        width=70, 
-        font=font.Font(family="Arial", size=10),
-        relief="solid",
-        borderwidth=1
-    )
-    src_entry.pack(fill="x", pady=(0, 10))
-    
-    add_folder_button = tk.Button(
-        source_frame, 
-        text="Add Folder", 
-        command=lambda: choose_folders(src_entry),
-        bg="#3498db",
-        fg="white",
-        font=font.Font(family="Arial", size=10, weight="bold"),
-        relief="flat",
-        padx=10,
-        pady=8,
-        cursor="hand2"
-    )
-    add_folder_button.pack(anchor="w")
 
-    # --- Destination Folder Section ---
-    dest_frame = tk.LabelFrame(
-        main_frame, 
-        text="Destination Folder", 
-        font=font.Font(family="Arial", size=12, weight="bold"), 
-        bg="#f0f0f0", 
-        fg="#2c3e50", 
-        padx=8, 
-        pady=8
-    )
-    dest_frame.pack(fill="x", pady=(0, 15))
-    
-    tk.Label(
-        dest_frame, 
-        text="Select where organized files should be saved:", 
-        font=font.Font(family="Arial", size=10), 
-        fg="#2c3e50", 
-        bg="#f0f0f0"
-    ).pack(anchor="w", pady=(0, 5))
-    
-    dest_entry = tk.Entry(
-        dest_frame, 
-        width=70, 
-        font=font.Font(family="Arial", size=10),
-        relief="solid",
-        borderwidth=1
-    )
-    dest_entry.pack(fill="x", pady=(0, 10))
-    
-    # Function to select destination folder
-    def choose_folder(entry_widget):
-        folder = filedialog.askdirectory()
-        if folder:
-            entry_widget.delete(0, tk.END)
-            entry_widget.insert(0, folder)
-    
-    browse_button = tk.Button(
-        dest_frame, 
-        text="Browse", 
-        command=lambda: choose_folder(dest_entry),
-        bg="#27ae60",
-        fg="white",
-        font=font.Font(family="Arial", size=10, weight="bold"),
-        relief="flat",
-        padx=12,
-        pady=8,
-        cursor="hand2"
-    )
-    browse_button.pack(anchor="w")
+# --- GUI Setup ---
+root = tk.Tk()
+root.title("Flow Bit")
+root.geometry("700x600")
+root.resizable(True, True)
 
-    # --- File Type Selection Section ---
-    filetype_frame = tk.LabelFrame(
-        main_frame, 
-        text="File Type Selection", 
-        font=font.Font(family="Arial", size=12, weight="bold"), 
-        bg="#f0f0f0", 
-        fg="#2c3e50", 
-        padx=10, 
-        pady=10
-    )
-    filetype_frame.pack(fill="x", pady=(0, 15))
-    
-    tk.Label(
-        filetype_frame, 
-        text="Choose which file types to organize:", 
-        font=font.Font(family="Arial", size=10), 
-        fg="#2c3e50", 
-        bg="#f0f0f0"
-    ).pack(anchor="w", pady=(0, 5))
-    
-    file_type_vars = {}
-    checkbox_frame = tk.Frame(filetype_frame, bg="#f0f0f0")
-    checkbox_frame.pack(fill="x")
-    
-    for i, category in enumerate(FILE_TYPES.keys()):
-        var = tk.BooleanVar(value=True)
-        file_type_vars[category] = var
-        cb = tk.Checkbutton(
-            checkbox_frame, 
-            text=category, 
-            variable=var,
-            font=font.Font(family="Arial", size=10),
-            fg="#2c3e50",
-            bg="#f0f0f0",
-            selectcolor="#ffffff",
-            activebackground="#f0f0f0",
-            activeforeground="#2c3e50"
-        )
-        cb.grid(row=i//4, column=i%4, sticky="w", padx=10, pady=5)
 
-    # --- Options Section ---
-    options_frame = tk.LabelFrame(
-        main_frame, 
-        text="Organization Options", 
-        font=font.Font(family="Arial", size=12, weight="bold"), 
-        bg="#f0f0f0", 
-        fg="#2c3e50", 
-        padx=10, 
-        pady=10
-    )
-    options_frame.pack(fill="x", pady=(0, 15))
+# --- Source Folders input (multiple allowed) ---
+tk.Label(root, text="Source Folders (multiple, separated by ;):").pack(anchor="w", padx=10, pady=5)
+src_entry = tk.Entry(root, width=70)
+src_entry.pack(padx=10, pady=2, anchor="w")
+tk.Button(root, text="Add Folder", command=lambda: choose_folders(src_entry)).pack(padx=10, pady=2, anchor="w")
 
-    # --- Sort by date option checkbox ---
-    sort_by_date_var = tk.BooleanVar(value=True)
-    date_cb = tk.Checkbutton(
-        options_frame, 
-        text="Sort files by date (create date-based subfolders)", 
-        variable=sort_by_date_var,
-        font=font.Font(family="Arial", size=10),
-        fg="#2c3e50",
-        bg="#f0f0f0",
-        selectcolor="#ffffff",
-        activebackground="#f0f0f0",
-        activeforeground="#2c3e50"
-    )
-    date_cb.pack(anchor="w", pady=5)
+# --- Destination Folder input ---
+tk.Label(root, text="Destination Folder:").pack(anchor="w", padx=10, pady=5)
+dest_entry = tk.Entry(root, width=70)
+dest_entry.pack(padx=10, pady=2, anchor="w")
+# Function to select destination folder
+def choose_folder(entry_widget):
+    folder = filedialog.askdirectory()
+    if folder:
+        entry_widget.delete(0, tk.END)
+        entry_widget.insert(0, folder)
+tk.Button(root, text="Browse", command=lambda: choose_folder(dest_entry)).pack(padx=10, pady=2, anchor="w")
 
-    # --- Delete empty folders option checkbox ---
-    delete_empty_var = tk.BooleanVar(value=False)
-    delete_cb = tk.Checkbutton(
-        options_frame,
-        text="Delete empty source folders after sorting (Use with caution)",
-        variable=delete_empty_var,
-        font=font.Font(family="Arial", size=10),
-        fg="#e74c3c",
-        bg="#f0f0f0",
-        selectcolor="#ffffff",
-        activebackground="#f0f0f0",
-        activeforeground="#e74c3c"
-    )
-    delete_cb.pack(anchor="w", pady=5)
+# --- File type selection checkboxes ---
+tk.Label(root, text="Select file types to separate:").pack(anchor="w", padx=10, pady=5)
+file_type_vars = {}
+file_type_frame = tk.Frame(root)
+file_type_frame.pack(anchor="w", padx=20)
+for i, category in enumerate(FILE_TYPES.keys()):
+    var = tk.BooleanVar(value=True)
+    file_type_vars[category] = var
+    tk.Checkbutton(file_type_frame, text=category, variable=var).grid(row=i//4, column=i%4, sticky="w", padx=5, pady=2)
 
-    # --- Sort Button and its callback ---
-    def on_sort():
-        # Clear log box
-        log_box.delete(1.0, tk.END)
-        log_box.insert(tk.END, "Starting file organization...\n")
-        log_box.see(tk.END)
-        
-        # Validate source folders
-        src_folders = [f.strip() for f in src_entry.get().split(';') if f.strip()]
-        if not src_folders:
-            messagebox.showerror("Error", "Please select at least one source folder.")
-            log_box.insert(tk.END, "Error: No source folders selected.\n")
-            return
-        
-        # Validate destination folder
-        dest_path = dest_entry.get().strip()
-        if not dest_path:
-            messagebox.showerror("Error", "Please select a destination folder.")
-            log_box.insert(tk.END, "Error: No destination folder selected.\n")
-            return
-        
-        # Check if destination path is valid and create if necessary
-        try:
-            dest_folder = Path(dest_path)
-            if not dest_folder.exists():
-                dest_folder.mkdir(parents=True, exist_ok=True)
-                log_box.insert(tk.END, f"Created destination folder: {dest_path}\n")
-            elif not dest_folder.is_dir():
-                messagebox.showerror("Error", "Destination path is not a valid directory.")
-                log_box.insert(tk.END, "Error: Destination path is not a directory.\n")
-                return
-            
-            # Test if we can write to the destination folder
-            test_file = dest_folder / "test_write_permission.tmp"
-            try:
-                test_file.touch()
-                test_file.unlink()  # Delete test file
-                log_box.insert(tk.END, f"Destination folder is writable: {dest_path}\n")
-            except (OSError, PermissionError):
-                messagebox.showerror("Error", "No write permission to destination folder.")
-                log_box.insert(tk.END, "Error: No write permission to destination folder.\n")
-                return
-                
-        except (OSError, PermissionError) as e:
-            messagebox.showerror("Error", f"Cannot access destination folder: {e}")
-            log_box.insert(tk.END, f"Error: Cannot access destination folder: {e}\n")
-            return
-        
-        # Gather selected file types
-        selected_types = [cat for cat, var in file_type_vars.items() if var.get()]
-        if not selected_types:
-            messagebox.showerror("Error", "Please select at least one file type to organize.")
-            log_box.insert(tk.END, "Error: No file types selected.\n")
-            return
-        
-        # Always include 'Others' if user wants to move unknown types
-        if 'Others' not in selected_types and any(var.get() for cat, var in file_type_vars.items()):
-            selected_types.append('Others')
-        
-        log_box.insert(tk.END, f"Selected file types: {', '.join(selected_types)}\n")
-        log_box.see(tk.END)
-        
-        # Call the main sorting function
-        try:
-            sort_files(
-                src_folders,
-                dest_path,
-                log_box,
-                selected_types,
-                sort_by_date_var.get(),
-                delete_empty_var.get()
-            )
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred during file sorting: {e}")
-            log_box.insert(tk.END, f"Fatal error: {e}\n")
-            log_box.see(tk.END)
 
-    # --- Action Buttons Section ---
-    action_frame = tk.Frame(main_frame, bg="#f0f0f0")
-    action_frame.pack(pady=(20, 15))
+# --- Sort by date option checkbox ---
+sort_by_date_var = tk.BooleanVar(value=True)
+tk.Checkbutton(root, text="Sort by date (create subfolders by date)", variable=sort_by_date_var).pack(anchor="w", padx=10, pady=5)
 
-    sort_button = tk.Button(
-        action_frame,
-        text="Sort Files",
-        command=on_sort,
-        bg="#3498db",
-        fg="white",
-        font=font.Font(family="Arial", size=14, weight="bold"),
-        relief="flat",
-        padx=15,
-        pady=12,
-        cursor="hand2"
-    )
-    sort_button.pack(side="left", padx=(0, 15))
+# --- Delete empty folders option checkbox ---
+delete_empty_var = tk.BooleanVar(value=False)
+tk.Checkbutton(
+    root,
+    text="Delete empty source folders after sorting",
+    variable=delete_empty_var,
+    fg="red"
+).pack(anchor="w", padx=10, pady=5)
 
-    def go_back():
-        root.destroy()
-        welcome = WelcomeScreen()
-        welcome.show()
 
-    back_button = tk.Button(
-        action_frame,
-        text="Back to Welcome",
-        command=go_back,
-        bg="#95a5a6",
-        fg="white",
-        font=font.Font(family="Arial", size=14),
-        relief="flat",
-        padx=15,
-        pady=12,
-        cursor="hand2"
+# --- Sort Button and its callback ---
+def on_sort():
+    # Gather selected file types
+    selected_types = [cat for cat, var in file_type_vars.items() if var.get()]
+    # Always include 'Others' if user wants to move unknown types
+    if 'Others' not in selected_types and any(var.get() for cat, var in file_type_vars.items()):
+        selected_types.append('Others')
+    # Get all source folders from entry
+    src_folders = [f.strip() for f in src_entry.get().split(';') if f.strip()]
+    if not src_folders:
+        messagebox.showerror("Error", "Please select at least one source folder.")
+        return
+    # Call the main sorting function
+    sort_files(
+        src_folders,
+        dest_entry.get(),
+        log_box,
+        selected_types,
+        sort_by_date_var.get(),
+        delete_empty_var.get()
     )
-    back_button.pack(side="left", padx=(0, 15))
-    
-    def open_system_monitor():
-        root.destroy()
-        monitor = SystemMonitorScreen()
-        monitor.show()
-    
-    monitor_button = tk.Button(
-        action_frame,
-        text="System Monitor",
-        command=open_system_monitor,
-        bg="#9b59b6",
-        fg="white",
-        font=font.Font(family="Arial", size=14),
-        relief="flat",
-        padx=15,
-        pady=12,
-        cursor="hand2"
-    )
-    monitor_button.pack(side="left", padx=(0, 15))
-    
-    def open_pomodoro_timer():
-        root.destroy()
-        timer = PomodoroTimer()
-        timer.show()
-    
-    pomodoro_button = tk.Button(
-        action_frame,
-        text="Pomodoro Timer",
-        command=open_pomodoro_timer,
-        bg="#e74c3c",
-        fg="white",
-        font=font.Font(family="Arial", size=14),
-        relief="flat",
-        padx=15,
-        pady=12,
-        cursor="hand2"
-    )
-    pomodoro_button.pack(side="left")
 
-    # Add hover effects to buttons
-    def add_hover_effect(button, hover_color, normal_color):
-        def on_enter(e):
-            button.config(bg=hover_color)
-        def on_leave(e):
-            button.config(bg=normal_color)
-        button.bind("<Enter>", on_enter)
-        button.bind("<Leave>", on_leave)
-    
-    add_hover_effect(add_folder_button, "#2980b9", "#3498db")
-    add_hover_effect(browse_button, "#229954", "#27ae60")
-    add_hover_effect(sort_button, "#2980b9", "#3498db")
-    add_hover_effect(back_button, "#7f8c8d", "#95a5a6")
-    add_hover_effect(monitor_button, "#8e44ad", "#9b59b6")
-    add_hover_effect(pomodoro_button, "#c0392b", "#e74c3c")
+tk.Button(
+    root, text="Sort Files", bg="green", fg="white",
+    command=on_sort
+).pack(pady=10)
 
-    # --- Log Section ---
-    log_frame = tk.LabelFrame(
-        main_frame, 
-        text="Operation Log", 
-        font=font.Font(family="Arial", size=12, weight="bold"), 
-        bg="#f0f0f0", 
-        fg="#2c3e50", 
-        padx=15, 
-        pady=15
-    )
-    log_frame.pack(fill="both", expand=True, pady=(0, 10))
-    
-    tk.Label(
-        log_frame, 
-        text="File sorting progress and results will be displayed here:", 
-        font=font.Font(family="Arial", size=10), 
-        fg="#2c3e50", 
-        bg="#f0f0f0"
-    ).pack(anchor="w", pady=(0, 5))
-    
-    log_box = scrolledtext.ScrolledText(
-        log_frame, 
-        width=80, 
-        height=10, 
-        state='normal',
-        font=font.Font(family="Courier", size=9),
-        bg="#ffffff",
-        fg="#2c3e50",
-        relief="solid",
-        borderwidth=1
-    )
-    log_box.pack(fill="both", expand=True)
+
+# --- Log output box ---
+tk.Label(root, text="Log:").pack(anchor="w", padx=10, pady=5)
+log_box = scrolledtext.ScrolledText(root, width=80, height=15)
+log_box.pack(padx=10, pady=5)
+
+
 
     # --- Start the GUI event loop ---
-    root.mainloop()
+root.mainloop()
 
 
 # --- Application Entry Point ---
