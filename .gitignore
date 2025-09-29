@@ -14,3 +14,4 @@ build/flowbit/localpycs/pyimod03_ctypes.pyc
 build/flowbit/localpycs/pyimod04_pywin32.pyc
 build/flowbit/localpycs/struct.pyc
 dist/flowbit.exe
+run_app.sh
