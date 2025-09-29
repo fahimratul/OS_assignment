@@ -18,11 +18,13 @@ Follow these steps to install Flowbit on your Windows laptop or PC by downloadin
 - Wait for the process to complete; this will create the executable in the `dist` folder.
 
 ## 4. Run the Application
-- Open the `dist` folder inside the extracted directory.
-- Double-click `flowbit.exe` to start the application.
+- ✅ Open the `dist` folder inside the extracted directory.
+- ✅ Double-click `flowbit.exe` to start the application.
+
+## Happy Coding. Thanks for using our app. ❤️😊 
 
 ## 5. Additional Notes
 - If you encounter issues, ensure you have Python installed and added to your PATH.
 - Refer to the documentation for further usage instructions.
-- For help, visit the Issues page on GitHub.
+- For help, visit the Issues page on GitHub. 
 
