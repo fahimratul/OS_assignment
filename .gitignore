@@ -1,0 +1,16 @@
+flowbit.spec
+build/flowbit/Analysis-00.toc
+build/flowbit/EXE-00.toc
+build/flowbit/base_library.zip
+build/flowbit/flowbit.pkg
+build/flowbit/PKG-00.toc
+build/flowbit/PYZ-00.pyz
+build/flowbit/PYZ-00.toc
+build/flowbit/warn-flowbit.txt
+build/flowbit/xref-flowbit.html
+build/flowbit/localpycs/pyimod01_archive.pyc
+build/flowbit/localpycs/pyimod02_importers.pyc
+build/flowbit/localpycs/pyimod03_ctypes.pyc
+build/flowbit/localpycs/pyimod04_pywin32.pyc
+build/flowbit/localpycs/struct.pyc
+dist/flowbit.exe
